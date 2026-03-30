@@ -20,7 +20,7 @@ const STAGES: { id: Stage; label: string; num: string; color: string }[] = [
 
 const SOURCES: Source[]  = ['LinkedIn', 'Facebook Groups', 'Cold Scraping', 'Referral'];
 const STATUSES: Status[] = ['Active', 'Won', 'Archive'];
-const SALESPERSONS       = ['حسين', 'هاجر', 'اسراء', 'رحمة', 'محمد'];
+const SALESPERSONS       = ['حسين', 'أحمد', 'مريم', 'سارة', 'محمد'];
 
 const STATUS_COLOR: Record<string, string> = { Active:'#6B8AFF', Won:'#86EFAC', Archive:'#9CA3AF' };
 const STATUS_BG:    Record<string, string> = { Active:'rgba(67,97,238,.18)', Won:'rgba(34,197,94,.18)', Archive:'rgba(100,100,110,.18)' };
