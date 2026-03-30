@@ -20,7 +20,7 @@ const STAGES: { id: Stage; label: string; num: string; color: string }[] = [
 
 const SOURCES: Source[]  = ['LinkedIn', 'Facebook Groups', 'Cold Scraping', 'Referral'];
 const STATUSES: Status[] = ['Active', 'Won', 'Archive'];
-const SALESPERSONS       = ['رحمة', 'إسراء', 'محمد', 'هاجر', 'حسين'];
+const SALESPERSONS       = ['حسين', 'هاجر', 'اسراء', 'رحمة', 'محمد'];
 
 const STATUS_COLOR: Record<string, string> = { Active:'#6B8AFF', Won:'#86EFAC', Archive:'#9CA3AF' };
 const STATUS_BG:    Record<string, string> = { Active:'rgba(67,97,238,.18)', Won:'rgba(34,197,94,.18)', Archive:'rgba(100,100,110,.18)' };
@@ -493,6 +493,7 @@ function Commission({ leads }: { leads: Lead[] }) {
       total:  mine.length,
       won:    mine.filter(l => l.status === 'Won').length,
       inPipe: mine.filter(l => l.status === 'Active').length,
+      archived: mine.filter(l => l.status === 'Archive').length,
       
     };
   }).filter(d => d.total > 0), [leads]);
@@ -513,7 +514,7 @@ function Commission({ leads }: { leads: Lead[] }) {
                 ['إجمالي الـ Leads', d.total, 'var(--text)'],
                 ['في الـ Pipeline',  d.inPipe,'#6B8AFF'],
                 ['Won ✅',           d.won,   '#22C55E'],
-                ['أرشيف 📁',        d.lost ?? 0,  '#9CA3AF'],
+                ['أرشيف 📁',        d.archived ?? 0,  '#9CA3AF'],
               ].map(([k,v,c]) => (
                 <div key={String(k)} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 0', borderBottom:'1px solid var(--border)', fontSize:14 }}>
                   <span style={{ color:'var(--text2)' }}>{k}</span>
