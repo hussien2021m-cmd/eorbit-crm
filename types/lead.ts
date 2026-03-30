@@ -1,6 +1,6 @@
-export type Stage = 'leads' | 'qualify' | 'message' | 'call' | 'audit' | 'closing' | 'onboard';
-export type Status = 'Active' | 'Won' | 'Archive' | 'New' | 'Contacted' | 'Qualified' | 'Lost';
-export type Source = 'LinkedIn' | 'Facebook Groups' | 'Cold Scraping' | 'Referral' | string;
+export type Stage = string;
+export type Status = string;
+export type Source = string;
 
 export interface Lead {
   id: string;
@@ -8,9 +8,9 @@ export interface Lead {
   company: string;
   phone: string;
   email: string;
-  source: Source;
-  stage: Stage;
-  status: Status;
+  source: string;
+  stage: string;
+  status: string;
   budget: string;
   salesperson: string;
   notes: string;
