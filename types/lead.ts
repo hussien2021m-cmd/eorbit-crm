@@ -1,5 +1,5 @@
 export type Stage = 'leads' | 'qualify' | 'message' | 'call' | 'audit' | 'closing' | 'onboard';
-export type Status = 'Active' | 'Won' | 'Archive';
+export type Status = 'Active' | 'Won' | 'Archive' | 'New' | 'Contacted' | 'Qualified' | 'Lost';
 export type Source = 'LinkedIn' | 'Facebook Groups' | 'Cold Scraping' | 'Referral' | string;
 
 export interface Lead {
