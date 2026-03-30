@@ -15,7 +15,7 @@ function getAuth() {
 }
 
 async function getSheets() {
-  const auth = await getAuth().getClient();
+  const auth = getAuth();
   return google.sheets({ version: 'v4', auth });
 }
 
