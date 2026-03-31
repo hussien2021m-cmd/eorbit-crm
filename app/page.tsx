@@ -306,18 +306,42 @@ function Dashboard({ leads, onAdd }: { leads: Lead[]; onAdd: () => void }) {
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 
 function Pipeline({ leads, onEdit, onAdd }: { leads: Lead[]; onEdit: (l: Lead) => void; onAdd: () => void }) {
+  const [activeStage, setActiveStage] = useState<Stage>('leads');
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
   return (
     <div>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20, flexWrap:'wrap', gap:12 }}>
-        <div style={{ fontSize:17, fontWeight:800 }}>الـ Kanban Pipeline</div>
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16, flexWrap:'wrap', gap:12 }}>
+        <div style={{ fontSize:17, fontWeight:800 }}>الـ Pipeline</div>
         <button style={C.btnP} onClick={onAdd}>+ Lead جديد</button>
       </div>
+
+      {/* Mobile stage tabs */}
+      <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:8, marginBottom:16 }} className="pipe-tabs">
+        {STAGES.map(st => {
+          const cnt = leads.filter(l => l.stage === st.id).length;
+          return (
+            <button key={st.id} onClick={() => setActiveStage(st.id as Stage)}
+              style={{ flexShrink:0, padding:'8px 14px', borderRadius:30, fontSize:13, fontWeight:700, cursor:'pointer', border:'2px solid', transition:'all .2s', fontFamily:'Cairo,sans-serif',
+                background: activeStage === st.id ? st.color+'30' : 'var(--bg3)',
+                borderColor: activeStage === st.id ? st.color : 'var(--border)',
+                color: activeStage === st.id ? st.color : 'var(--text2)',
+              }}>
+              {st.num} {st.label} {cnt > 0 && <span style={{ background:st.color, color:'#fff', borderRadius:20, padding:'1px 7px', fontSize:11, marginRight:4 }}>{cnt}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop: all columns / Mobile: active stage only */}
       <div style={{ display:'flex', gap:14, overflowX:'auto', paddingBottom:16 }}>
-        {STAGES.map(stage => {
+        {STAGES.filter(st => {
+          if (typeof window !== 'undefined' && window.innerWidth <= 768) return st.id === activeStage;
+          return true;
+        }).map(stage => {
           const sl = leads.filter(l => l.stage === stage.id).sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
           return (
-            <div key={stage.id} style={{ flex:'0 0 260px', background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:14, display:'flex', flexDirection:'column', maxHeight:'calc(100vh - 180px)' }}>
-              {/* Col header */}
+            <div key={stage.id} style={{ flex: typeof window !== 'undefined' && window.innerWidth <= 768 ? '1' : '0 0 260px', minWidth: typeof window !== 'undefined' && window.innerWidth <= 768 ? '100%' : 260, background:'var(--bg2)', border:'1px solid var(--border)', borderRadius:14, display:'flex', flexDirection:'column' }}>
               <div style={{ padding:'14px 16px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', background:`linear-gradient(135deg, ${stage.color}18, transparent)` }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                   <span style={{ width:10, height:10, borderRadius:'50%', background:stage.color, display:'inline-block' }} />
@@ -325,15 +349,14 @@ function Pipeline({ leads, onEdit, onAdd }: { leads: Lead[]; onEdit: (l: Lead) =
                 </div>
                 <span style={{ background:stage.color+'25', color:stage.color, borderRadius:20, padding:'3px 10px', fontSize:12, fontWeight:800 }}>{sl.length}</span>
               </div>
-              {/* Cards */}
-              <div style={{ flex:1, padding:10, overflowY:'auto', display:'flex', flexDirection:'column', gap:10 }}>
+              <div style={{ flex:1, padding:10, display:'flex', flexDirection:'column', gap:10 }}>
                 {sl.length === 0
-                  ? <div style={{ padding:24, textAlign:'center', color:'var(--text3)', fontSize:13 }}>لا يوجد leads</div>
+                  ? <div style={{ padding:24, textAlign:'center', color:'var(--text3)', fontSize:13 }}>لا يوجد leads في هذه المرحلة</div>
                   : sl.map(lead => (
                     <div key={lead.id} onClick={() => onEdit(lead)}
-                      style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:12, padding:14, cursor:'pointer', transition:'all .2s' }}
-                      onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='var(--borderB)'; el.style.background='var(--card2)'; el.style.transform='translateY(-2px)'; el.style.boxShadow='0 8px 24px rgba(0,0,0,.4)'; }}
-                      onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='var(--border)'; el.style.background='var(--card)'; el.style.transform=''; el.style.boxShadow=''; }}
+                      style={{ background:'var(--card)', border:'1px solid var(--border)', borderRadius:12, padding:16, cursor:'pointer', transition:'all .2s' }}
+                      onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='var(--borderB)'; el.style.background='var(--card2)'; }}
+                      onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='var(--border)'; el.style.background='var(--card)'; }}
                     >
                       <div style={{ fontSize:15, fontWeight:800, marginBottom:4 }}>{lead.name || '—'}</div>
                       <div style={{ fontSize:13, color:'var(--text2)', marginBottom:8 }}>{lead.company || '—'}</div>
@@ -672,15 +695,19 @@ export default function Home() {
             </div>
           </div>
           <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-            {currentUser && <span style={{ fontSize:13, color:'var(--text2)', display:'flex', alignItems:'center', gap:6 }} className="hide-mobile">👤 {currentUser.name}</span>}
+            {currentUser && (
+              <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(123,92,246,.15)', border:'1px solid var(--borderB)', borderRadius:30, padding:'6px 14px' }}>
+                <span style={{ fontSize:18 }}>👤</span>
+                <span style={{ fontSize:14, fontWeight:700, color:'var(--purpleL)' }}>{currentUser.name}</span>
+              </div>
+            )}
             <button style={{ ...C.btnS, padding:'10px 16px' }} onClick={() => refresh()}>↻</button>
-            <button style={{ ...C.btnP, padding:'10px 20px', fontSize:14 }} onClick={() => setModalLead(null)}>+ Lead</button>
-            <button style={{ ...C.btnS, padding:'10px 14px', fontSize:13, color:'#EF4444' }} onClick={handleLogout} title="خروج">⬚</button>
+            <button style={{ ...C.btnD, padding:'10px 18px', fontSize:14 }} onClick={handleLogout}>🚪 خروج</button>
           </div>
         </div>
 
         {/* Content */}
-        <div style={{ flex:1, padding:24, overflowY:'auto' }}>
+        <div style={{ flex:1, padding:'24px', overflowY:'auto' }} className="content-pad">
           {view === 'dashboard'  && <Dashboard   leads={leads} onAdd={() => setModalLead(null)} />}
           {view === 'pipeline'   && <Pipeline    leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
           {view === 'leads'      && <LeadsTable  leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
