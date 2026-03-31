@@ -5,11 +5,13 @@ const SHEET_NAME = 'Leads';
 const HEADERS = ['id','name','company','phone','email','source','stage','status','budget','salesperson','notes','createdAt','updatedAt'];
 
 function getAuth() {
-  return new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
+  const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '')
+    .replace(/\\n/g, '\n')
+    .replace(/"/g, '');
+
+  return new google.auth.JWT({
+    email: process.env.GOOGLE_CLIENT_EMAIL,
+    key: privateKey,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 }
@@ -27,8 +29,8 @@ function rowToLead(row: string[]): Lead {
     phone:       row[3]  ?? '',
     email:       row[4]  ?? '',
     source:      row[5]  ?? '',
-    stage:       (row[6] ?? 'leads') as Lead['stage'],
-    status:      (row[7] ?? 'New')   as Lead['status'],
+    stage:       row[6]  ?? 'leads',
+    status:      row[7]  ?? 'Active',
     budget:      row[8]  ?? '',
     salesperson: row[9]  ?? '',
     notes:       row[10] ?? '',
