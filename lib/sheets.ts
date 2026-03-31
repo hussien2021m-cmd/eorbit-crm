@@ -95,17 +95,34 @@ export async function updateLead(id: string, data: UpdateLeadInput): Promise<Lea
 
 export async function deleteLead(id: string): Promise<boolean> {
   const sheets = await getSheets();
-  const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID() });
-  const sheet = meta.data.sheets?.find(s => s.properties?.title === SHEET_NAME);
-  if (!sheet?.properties?.sheetId && sheet?.properties?.sheetId !== 0) return false;
-  const numericSheetId = sheet.properties!.sheetId!;
+
+  // نجيب الصفوف عشان نعرف رقم الصف
   const res = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID(), range: RANGE });
   const rows = res.data.values ?? [];
   const rowIndex = rows.findIndex((r, i) => i > 0 && r[0] === id);
   if (rowIndex === -1) return false;
+
+  // نجيب الـ sheetId الرقمي
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: SHEET_ID() });
+  const sheet = meta.data.sheets?.find(s => s.properties?.title === SHEET_NAME);
+  const numericSheetId = sheet?.properties?.sheetId ?? 0;
+
+  // نحذف الصف
   await sheets.spreadsheets.batchUpdate({
     spreadsheetId: SHEET_ID(),
-    requestBody: { requests: [{ deleteDimension: { range: { sheetId: numericSheetId, dimension: 'ROWS', startIndex: rowIndex, endIndex: rowIndex + 1 } } }] },
+    requestBody: {
+      requests: [{
+        deleteDimension: {
+          range: {
+            sheetId: numericSheetId,
+            dimension: 'ROWS',
+            startIndex: rowIndex,
+            endIndex: rowIndex + 1,
+          }
+        }
+      }]
+    },
   });
+
   return true;
 }
