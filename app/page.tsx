@@ -740,6 +740,33 @@ export default function Home() {
             </div>
           )}
         </div>
+
+        {/* ── Mobile Bottom Navigation ── */}
+        <div className="mobile-bottom-nav" style={{ display:'none', position:'fixed', bottom:0, left:0, right:0, background:'var(--bg2)', borderTop:'1px solid var(--border)', zIndex:100, padding:'8px 4px', paddingBottom:'env(safe-area-inset-bottom, 8px)' }}>
+          <div style={{ display:'flex', justifyContent:'space-around', alignItems:'center' }}>
+            {navItems.map(n => (
+              <button key={n.id} onClick={() => goTo(n.id)}
+                style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'6px 12px', borderRadius:10, cursor:'pointer', border:'none', background:'none', flex:1, position:'relative', fontFamily:'Cairo,sans-serif' }}
+              >
+                <span style={{ fontSize:22 }}>{n.icon}</span>
+                <span style={{ fontSize:10, fontWeight:700, color: view === n.id ? 'var(--purpleL)' : 'var(--text3)' }}>{n.label}</span>
+                {view === n.id && <span style={{ position:'absolute', bottom:-4, width:20, height:3, background:'var(--purple)', borderRadius:3 }} />}
+                {n.id === 'commission' && leads.filter(l=>l.status==='Won').length > 0 && (
+                  <span style={{ position:'absolute', top:2, right:8, background:'#22C55E', color:'#fff', borderRadius:20, padding:'1px 5px', fontSize:9, fontWeight:800 }}>
+                    {leads.filter(l=>l.status==='Won').length}
+                  </span>
+                )}
+              </button>
+            ))}
+            {/* Add button */}
+            <button onClick={() => setModalLead(null)}
+              style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'6px 12px', borderRadius:10, cursor:'pointer', border:'none', background:'none', flex:1, fontFamily:'Cairo,sans-serif' }}
+            >
+              <span style={{ fontSize:22, background:'var(--purple)', borderRadius:'50%', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:900 }}>+</span>
+              <span style={{ fontSize:10, fontWeight:700, color:'var(--text3)' }}>إضافة</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Modal */}
