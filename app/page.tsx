@@ -632,98 +632,51 @@ export default function Home() {
   function goTo(v: View) { setView(v); setSidebarOpen(false); }
 
   return (
-    <div style={{ display:'flex', minHeight:'100vh' }}>
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', background:'var(--bg)' }}>
 
-      {/* Sidebar overlay */}
-      <div className={`sb-overlay${sidebarOpen ? ' show' : ''}`} onClick={() => setSidebarOpen(false)} />
-
-      {/* Sidebar */}
-      <div className={`sidebar${sidebarOpen ? ' open' : ''}`}
-        style={{ width:260, background:'var(--bg2)', borderLeft:'1px solid var(--border)', display:'flex', flexDirection:'column', position:'fixed', top:0, right:0, bottom:0, zIndex:100, transition:'transform .3s ease' }}
-      >
-        {/* Logo */}
-        <div style={{ padding:'22px 20px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:12 }}>
-          <img src={LOGO_B64} alt="E-Orbit" style={{ width:42, height:42, borderRadius:12, objectFit:'cover', flexShrink:0 }} />
+      {/* ── Topbar ── */}
+      <div style={{ height:64, background:'var(--bg2)', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', position:'sticky', top:0, zIndex:50, gap:12 }}>
+        {/* Logo + Name */}
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <img src={LOGO_B64} alt="E-Orbit" style={{ width:44, height:44, borderRadius:12, objectFit:'cover' }} />
           <div>
-            <div style={{ fontSize:18, fontWeight:900, background:'linear-gradient(135deg,#9B7BFF,#6B8AFF)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', letterSpacing:1 }}>E-ORBIT</div>
-            <div style={{ fontSize:11, color:'var(--text3)' }}>نظام السيلز</div>
+            <div style={{ fontSize:18, fontWeight:900, background:'linear-gradient(135deg,#9B7BFF,#6B8AFF)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', letterSpacing:1, lineHeight:1.2 }}>E-ORBIT</div>
+            <div style={{ fontSize:11, color:'var(--text3)', lineHeight:1 }}>نظام السيلز</div>
           </div>
         </div>
 
-        {/* Nav */}
-        <div style={{ flex:1, padding:'16px 12px', display:'flex', flexDirection:'column', gap:4 }}>
-          {navItems.map(n => (
-            <button key={n.id} onClick={() => goTo(n.id)}
-              style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 16px', borderRadius:12, cursor:'pointer', fontSize:15, fontWeight:600, border:'none', width:'100%', textAlign:'right', transition:'all .15s',
-                background: view === n.id ? 'rgba(123,92,246,.18)' : 'none',
-                color:      view === n.id ? 'var(--purpleL)'        : 'var(--text2)',
-                outline:    view === n.id ? '1px solid var(--borderB)' : 'none',
-              }}
-            >
-              <span style={{ fontSize:18, minWidth:24, textAlign:'center' }}>{n.icon}</span>
-              <span>{n.label}</span>
-              {n.id === 'commission' && leads.filter(l=>l.status==='Won').length > 0 && (
-                <span style={{ marginRight:'auto', background:'#22C55E', color:'#fff', borderRadius:20, padding:'2px 8px', fontSize:11, fontWeight:800 }}>
-                  {leads.filter(l=>l.status==='Won').length}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        {/* Page title */}
+        <div style={{ fontSize:16, fontWeight:800, color:'var(--text)' }}>{viewTitles[view]}</div>
 
-        {/* Footer */}
-        <div style={{ padding:16, borderTop:'1px solid var(--border)', fontSize:11, color:'var(--text3)', textAlign:'center', lineHeight:1.8 }}>
-          E-Orbit Performance Marketing<br />v2.0 · {leads.length} leads
+        {/* User + actions */}
+        <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+          {currentUser && (
+            <div style={{ display:'flex', alignItems:'center', gap:6, background:'rgba(123,92,246,.15)', border:'1px solid var(--borderB)', borderRadius:30, padding:'5px 12px' }}>
+              <span style={{ fontSize:15 }}>👤</span>
+              <span style={{ fontSize:13, fontWeight:700, color:'var(--purpleL)' }}>{currentUser.name}</span>
+            </div>
+          )}
+          <button style={{ ...C.btnS, padding:'8px 12px', fontSize:13 }} onClick={() => refresh()}>↻</button>
+          <button style={{ ...C.btnD, padding:'8px 14px', fontSize:13 }} onClick={handleLogout}>🚪 خروج</button>
         </div>
       </div>
 
-      {/* Main */}
-      <div className="main" style={{ flex:1, minHeight:'100vh', display:'flex', flexDirection:'column' }}>
-
-        {/* Topbar */}
-        <div style={{ height:68, background:'var(--bg2)', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px', position:'sticky', top:0, zIndex:50, gap:12 }}>
-          <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-            {/* Menu button — mobile only */}
-            <button className="menu-btn"
-              onClick={() => setSidebarOpen(o => !o)}
-              style={{ display:'none', background:'var(--bg3)', border:'1px solid var(--border)', color:'var(--text2)', fontSize:18, cursor:'pointer', borderRadius:10, width:44, height:44, alignItems:'center', justifyContent:'center' }}
-            >☰</button>
-            <div>
-              <div style={{ fontSize:19, fontWeight:800 }}>{viewTitles[view]}</div>
-              {isLoading && <div style={{ fontSize:11, color:'var(--text3)' }}>⏳ جاري التحميل...</div>}
-              {isError   && <div style={{ fontSize:11, color:'#EF4444' }}>❌ خطأ في الاتصال</div>}
-            </div>
-          </div>
-          <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-            {currentUser && (
-              <div style={{ display:'flex', alignItems:'center', gap:8, background:'rgba(123,92,246,.15)', border:'1px solid var(--borderB)', borderRadius:30, padding:'6px 14px' }}>
-                <span style={{ fontSize:18 }}>👤</span>
-                <span style={{ fontSize:14, fontWeight:700, color:'var(--purpleL)' }}>{currentUser.name}</span>
-              </div>
-            )}
-            <button style={{ ...C.btnS, padding:'10px 16px' }} onClick={() => refresh()}>↻</button>
-            <button style={{ ...C.btnD, padding:'10px 18px', fontSize:14 }} onClick={handleLogout}>🚪 خروج</button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div style={{ flex:1, padding:'24px', overflowY:'auto' }} className="content-pad">
-          {view === 'dashboard'  && <Dashboard   leads={leads} onAdd={() => setModalLead(null)} />}
-          {view === 'pipeline'   && <Pipeline    leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
-          {view === 'leads'      && <LeadsTable  leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
-          {view === 'commission' && <Commission  leads={leads} />}
-          {view === 'settings'   && (
+      {/* ── Content ── */}
+      <div style={{ flex:1, padding:20, overflowY:'auto', paddingBottom:90 }}>
+        {isLoading && <div style={{ textAlign:'center', padding:20, color:'var(--text3)', fontSize:14 }}>⏳ جاري التحميل...</div>}
+        {isError   && <div style={{ textAlign:'center', padding:20, color:'#EF4444', fontSize:14 }}>❌ خطأ في الاتصال</div>}
+        {view === 'dashboard'  && <Dashboard   leads={leads} onAdd={() => setModalLead(null)} />}
+        {view === 'pipeline'   && <Pipeline    leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
+        {view === 'leads'      && <LeadsTable  leads={leads} onEdit={l => setModalLead(l)} onAdd={() => setModalLead(null)} />}
+        {view === 'commission' && <Commission  leads={leads} />}
+        {view === 'settings'   && (
             <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
               <div style={C.card}>
                 <div style={{ fontSize:17, fontWeight:800, marginBottom:16, paddingBottom:14, borderBottom:'1px solid var(--border)' }}>👥 موظفو السيلز</div>
                 <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:16 }}>
-                  {SALESPERSONS.map(p => (
+                  {['حسين','أحمد','مريم','سارة','محمد'].map(p => (
                     <span key={p} style={{ background:'rgba(123,92,246,.15)', color:'var(--purpleL)', borderRadius:30, padding:'8px 18px', fontSize:14, fontWeight:700 }}>👤 {p}</span>
                   ))}
-                </div>
-                <div style={{ background:'rgba(123,92,246,.07)', border:'1px solid var(--borderB)', borderRadius:10, padding:16, fontSize:14, color:'var(--text2)', lineHeight:1.8 }}>
-                  ⚙️ لتعديل الأسماء، افتح ملف <strong style={{ color:'var(--purpleL)' }}>app/page.tsx</strong> وعدّل السطر:<br />
-                  <code style={{ background:'var(--bg3)', padding:'2px 8px', borderRadius:6, fontSize:13 }}>const SALESPERSONS = [...]</code>
                 </div>
               </div>
               <div style={C.card}>
@@ -739,33 +692,32 @@ export default function Home() {
               </div>
             </div>
           )}
-        </div>
+      </div>
 
-        {/* ── Mobile Bottom Navigation ── */}
-        <div className="mobile-bottom-nav" style={{ display:'none', position:'fixed', bottom:0, left:0, right:0, background:'var(--bg2)', borderTop:'1px solid var(--border)', zIndex:100, padding:'8px 4px', paddingBottom:'env(safe-area-inset-bottom, 8px)' }}>
-          <div style={{ display:'flex', justifyContent:'space-around', alignItems:'center' }}>
-            {navItems.map(n => (
-              <button key={n.id} onClick={() => goTo(n.id)}
-                style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'6px 12px', borderRadius:10, cursor:'pointer', border:'none', background:'none', flex:1, position:'relative', fontFamily:'Cairo,sans-serif' }}
-              >
-                <span style={{ fontSize:22 }}>{n.icon}</span>
-                <span style={{ fontSize:10, fontWeight:700, color: view === n.id ? 'var(--purpleL)' : 'var(--text3)' }}>{n.label}</span>
-                {view === n.id && <span style={{ position:'absolute', bottom:-4, width:20, height:3, background:'var(--purple)', borderRadius:3 }} />}
-                {n.id === 'commission' && leads.filter(l=>l.status==='Won').length > 0 && (
-                  <span style={{ position:'absolute', top:2, right:8, background:'#22C55E', color:'#fff', borderRadius:20, padding:'1px 5px', fontSize:9, fontWeight:800 }}>
-                    {leads.filter(l=>l.status==='Won').length}
-                  </span>
-                )}
-              </button>
-            ))}
-            {/* Add button */}
-            <button onClick={() => setModalLead(null)}
-              style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'6px 12px', borderRadius:10, cursor:'pointer', border:'none', background:'none', flex:1, fontFamily:'Cairo,sans-serif' }}
+      {/* ── Bottom Navigation ── */}
+      <div style={{ position:'fixed', bottom:0, left:0, right:0, background:'var(--bg2)', borderTop:'1px solid var(--border)', zIndex:100, paddingBottom:'env(safe-area-inset-bottom, 0px)' }}>
+        <div style={{ display:'flex', justifyContent:'space-around', alignItems:'center', padding:'6px 4px' }}>
+          {navItems.map(n => (
+            <button key={n.id} onClick={() => goTo(n.id)}
+              style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'6px 10px', borderRadius:12, cursor:'pointer', border:'none', background: view === n.id ? 'rgba(123,92,246,.15)' : 'none', flex:1, position:'relative', fontFamily:'Cairo,sans-serif', transition:'all .15s' }}
             >
-              <span style={{ fontSize:22, background:'var(--purple)', borderRadius:'50%', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontWeight:900 }}>+</span>
-              <span style={{ fontSize:10, fontWeight:700, color:'var(--text3)' }}>إضافة</span>
+              <span style={{ fontSize:20 }}>{n.icon}</span>
+              <span style={{ fontSize:10, fontWeight:700, color: view === n.id ? 'var(--purpleL)' : 'var(--text3)', transition:'color .15s' }}>{n.label}</span>
+              {view === n.id && <span style={{ position:'absolute', bottom:2, width:24, height:3, background:'var(--purple)', borderRadius:3 }} />}
+              {n.id === 'commission' && leads.filter(l=>l.status==='Won').length > 0 && (
+                <span style={{ position:'absolute', top:2, right:'15%', background:'#22C55E', color:'#fff', borderRadius:20, padding:'1px 5px', fontSize:9, fontWeight:800 }}>
+                  {leads.filter(l=>l.status==='Won').length}
+                </span>
+              )}
             </button>
-          </div>
+          ))}
+          {/* Add Lead button */}
+          <button onClick={() => setModalLead(null)}
+            style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'4px 10px', borderRadius:12, cursor:'pointer', border:'none', background:'none', flex:1, fontFamily:'Cairo,sans-serif' }}
+          >
+            <span style={{ width:38, height:38, borderRadius:'50%', background:'var(--purple)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, color:'#fff', fontWeight:900, boxShadow:'0 4px 14px rgba(123,92,246,.5)' }}>+</span>
+            <span style={{ fontSize:10, fontWeight:700, color:'var(--text3)' }}>إضافة</span>
+          </button>
         </div>
       </div>
 
