@@ -674,7 +674,7 @@ export default function Home() {
               <div style={C.card}>
                 <div style={{ fontSize:17, fontWeight:800, marginBottom:16, paddingBottom:14, borderBottom:'1px solid var(--border)' }}>👥 موظفو السيلز</div>
                 <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:16 }}>
-                  {['حسين','أحمد','مريم','سارة','محمد'].map(p => (
+                  {['حسين','محمد','إسراء','رحمة','هاجر'].map(p => (
                     <span key={p} style={{ background:'rgba(123,92,246,.15)', color:'var(--purpleL)', borderRadius:30, padding:'8px 18px', fontSize:14, fontWeight:700 }}>👤 {p}</span>
                   ))}
                 </div>
