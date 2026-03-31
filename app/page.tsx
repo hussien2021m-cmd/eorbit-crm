@@ -678,7 +678,7 @@ export default function Home() {
       </div>
 
       {/* Main */}
-      <div className="main" style={{ flex:1, marginRight:260, minHeight:'100vh', display:'flex', flexDirection:'column' }}>
+      <div className="main" style={{ flex:1, minHeight:'100vh', display:'flex', flexDirection:'column', marginRight:'var(--main-margin, 260px)' }}>
 
         {/* Topbar */}
         <div style={{ height:68, background:'var(--bg2)', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 24px', position:'sticky', top:0, zIndex:50, gap:12 }}>
