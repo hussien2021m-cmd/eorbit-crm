@@ -639,7 +639,7 @@ export default function Home() {
 
       {/* Sidebar */}
       <div className={`sidebar${sidebarOpen ? ' open' : ''}`}
-        style={{ width:260, background:'var(--bg2)', borderLeft:'1px solid var(--border)', display:'flex', flexDirection:'column', position:'fixed', top:0, right:0, bottom:0, zIndex:100 }}
+        style={{ width:260, background:'var(--bg2)', borderLeft:'1px solid var(--border)', display:'flex', flexDirection:'column', position:'fixed', top:0, right:0, bottom:0, zIndex:100, transition:'transform .3s ease' }}
       >
         {/* Logo */}
         <div style={{ padding:'22px 20px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:12 }}>
